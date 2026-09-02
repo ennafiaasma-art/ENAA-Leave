@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('telephone');
             $table->string('role');
             $table->string('departement');
-            $table->integer('solde_conge')->default(0);
 
 $table->timestamps();
         });
