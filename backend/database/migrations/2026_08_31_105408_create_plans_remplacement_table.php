@@ -13,6 +13,19 @@ return new class extends Migration
     {
         Schema::create('plans_remplacement', function (Blueprint $table) {
             $table->id();
+            $table->string('type');
+
+            $table->foreignId('formateur_remplacant_id')
+                  ->constrained('employes')
+                  ->cascadeOnDelete();
+
+            $table->date('date_remplacement');
+
+            $table->foreignId('cours_id')
+                  ->constrained('cours')
+                  ->cascadeOnDelete();
+                      $table->string('statut')->default('en_attente');
+            $table->text('commentaire')->nullable();
             $table->timestamps();
         });
     }

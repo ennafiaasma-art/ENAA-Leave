@@ -13,8 +13,31 @@ return new class extends Migration
     {
         Schema::create('validations', function (Blueprint $table) {
             $table->id();
+             $table->foreignId('demande_conge_id')
+            ->constrained('demandes_conge')
+            ->cascadeOnDelete();
+
+        $table->foreignId('validateur_id')
+            ->constrained('employes')
+            ->cascadeOnDelete();
+
+        $table->enum('niveau', [
+            'manager',
+            'rh'
+        ]);
+
+
+         $table->enum('statut', [
+            'approved',
+            'rejected',
+            'needs_information'
+        ]);
+             $table->timestamp('date_validation')->nullable();
+
+        $table->text('commentaire')->nullable();
             $table->timestamps();
         });
+
     }
 
     /**

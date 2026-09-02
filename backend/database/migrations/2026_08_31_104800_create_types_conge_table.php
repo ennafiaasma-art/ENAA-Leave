@@ -11,18 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cours', function (Blueprint $table) {
+        Schema::create('types_conge', function (Blueprint $table) {
             $table->id();
-              $table->string('titre');
-        $table->string('module');
-
-        $table->date('date');
-        $table->time('heure_debut');
-        $table->time('heure_fin');
-
-        $table->foreignId('formateur_id')
-            ->constrained('employes')
-            ->cascadeOnDelete();
+             $table->string('nom');
+        $table->text('description')->nullable();
+        $table->decimal('acquisition_mensuelle', 5, 2)->nullable();
+        $table->integer('duree_max')->nullable();
             $table->timestamps();
         });
     }
@@ -32,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cours');
+        Schema::dropIfExists('types_conge');
     }
 };

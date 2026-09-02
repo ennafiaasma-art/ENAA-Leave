@@ -11,19 +11,24 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cours', function (Blueprint $table) {
+        Schema::create('soldes_conge', function (Blueprint $table) {
             $table->id();
-              $table->string('titre');
-        $table->string('module');
-
-        $table->date('date');
-        $table->time('heure_debut');
-        $table->time('heure_fin');
-
-        $table->foreignId('formateur_id')
+              $table->foreignId('employe_id')
             ->constrained('employes')
             ->cascadeOnDelete();
+
+        $table->foreignId('type_conge_id')
+            ->constrained('types_conge')
+            ->cascadeOnDelete();
+
+        $table->decimal('solde', 8, 2)->default(0);
+        $table->year('annee');
             $table->timestamps();
+             $table->unique([
+            'employe_id',
+            'type_conge_id',
+            'annee'
+        ]);
         });
     }
 
@@ -32,6 +37,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cours');
+        Schema::dropIfExists('soldes_conge');
     }
 };
