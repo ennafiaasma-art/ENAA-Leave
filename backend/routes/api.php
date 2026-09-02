@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DemandeCongeController;
-
+use App\Http\Controllers\Api\TypeCongeController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -14,4 +14,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/demandes-conge', [DemandeCongeController::class, 'store']);
     Route::put('/demandes-conge/{id}', [DemandeCongeController::class, 'update']);
     Route::delete('/demandes-conge/{id}', [DemandeCongeController::class, 'destroy']);
+});
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get('/types-conge', [TypeCongeController::class, 'index']);
+    Route::get('/types-conge/{id}', [TypeCongeController::class, 'show']);
+    Route::post('/types-conge', [TypeCongeController::class, 'store']);
+    Route::put('/types-conge/{id}', [TypeCongeController::class, 'update']);
+    Route::delete('/types-conge/{id}', [TypeCongeController::class, 'destroy']);
+
 });
