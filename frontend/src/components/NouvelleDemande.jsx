@@ -17,20 +17,28 @@ function NouvelleDemande() {
     });
 
     // Récupérer les types de congé
-    useEffect(() => {
-        const fetchTypesConge = async () => {
-            try {
-                const response = await api.get("/types-conge");
+  useEffect(() => {
+    const fetchTypesConge = async () => {
+        try {
+            const response = await api.get("/types-conge");
 
-                setTypesConge(response.data.types_conge);
-            } catch (error) {
-                console.error(error);
-                setError("Impossible de récupérer les types de congé.");
-            }
-        };
+            console.log("Réponse API :", response.data);
 
-        fetchTypesConge();
-    }, []);
+            setTypesConge(response.data.types_conge);
+        } catch (error) {
+            console.error("Erreur complète :", error);
+            console.error("Status :", error.response?.status);
+            console.error("Data :", error.response?.data);
+
+            setError(
+                error.response?.data?.message ||
+                "Impossible de récupérer les types de congé."
+            );
+        }
+    };
+
+    fetchTypesConge();
+}, []);
 
     // Changement des champs
     const handleChange = (e) => {
