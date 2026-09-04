@@ -1,11 +1,13 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -14,8 +16,7 @@ function Login() {
         setMessage("");
 
         try {
-            const response = await axios.post(
-                "http://127.0.0.1:8000/api/login",
+            const response = await axios.post("/api/login" ,
                 {
                     email,
                     password,
@@ -31,6 +32,8 @@ function Login() {
             );
 
             setMessage("Connexion réussie ✅");
+
+            setTimeout(() => { navigate("/employee-dashboard"); }, 500);
 
         } catch (error) {
             console.error(error);

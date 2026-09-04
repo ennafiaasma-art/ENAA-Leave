@@ -2,8 +2,16 @@ import { useState } from "react";
 import NouvelleDemande from "./NouvelleDemande";
 
 function EmployeeDashboard() {
-    const employe = JSON.parse(localStorage.getItem("employe"));
+const employeData = localStorage.getItem("employe");
 
+let employe = null;
+
+try {
+    employe = employeData ? JSON.parse(employeData) : null;
+} catch (error) {
+    console.error("Erreur données employé :", error);
+    localStorage.removeItem("employe");
+}
     const [showDemandeForm, setShowDemandeForm] = useState(false);
 
     const handleLogout = () => {
