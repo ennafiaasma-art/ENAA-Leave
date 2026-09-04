@@ -1,8 +1,23 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import api from "../services/api";
 
 function NouvelleDemande() {
-    const [typesConge, setTypesConge] = useState([]);
+    // Types de congé en statique temporairement
+    const typesConge = [
+        {
+            id: 1,
+            nom: "Congé annuel",
+        },
+        {
+            id: 2,
+            nom: "Congé maladie",
+        },
+        {
+            id: 3,
+            nom: "Congé exceptionnel",
+        },
+    ];
+
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
@@ -16,24 +31,7 @@ function NouvelleDemande() {
         motif: "",
     });
 
-    useEffect(() => {
-    const fetchTypesConge = async () => {
-        try {
-            const response = await api.get("/types-conge");
-
-            console.log("Response complète :", response);
-            console.log("Data :", response.data);
-            console.log("Types de congé :", response.data.types_conge);
-
-            setTypesConge(response.data.types_conge);
-        } catch (error) {
-            console.error("Erreur API :", error);
-        }
-    };
-
-    fetchTypesConge();
-}, []);
-
+    // Changement des champs
     const handleChange = (e) => {
         setForm({
             ...form,
@@ -41,6 +39,7 @@ function NouvelleDemande() {
         });
     };
 
+    // Envoyer la demande
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -55,10 +54,14 @@ function NouvelleDemande() {
                 duree: Number(form.duree),
             });
 
+            console.log("Réponse demande :", response.data);
+
             setMessage(
-                response.data.message || "Demande envoyée avec succès."
+                response.data.message ||
+                    "Demande envoyée avec succès."
             );
 
+            // Vider le formulaire
             setForm({
                 type_conge_id: "",
                 date_debut: "",
@@ -79,7 +82,7 @@ function NouvelleDemande() {
             } else {
                 setError(
                     error.response?.data?.message ||
-                    "Une erreur est survenue."
+                        "Une erreur est survenue."
                 );
             }
         } finally {
@@ -90,6 +93,7 @@ function NouvelleDemande() {
     return (
         <div className="max-w-4xl mx-auto">
 
+            {/* Header */}
             <div className="mb-8">
                 <h2 className="text-3xl font-bold text-gray-800">
                     Nouvelle demande de congé
@@ -100,21 +104,27 @@ function NouvelleDemande() {
                 </p>
             </div>
 
+            {/* Message succès */}
             {message && (
                 <div className="mb-6 rounded-lg bg-green-100 border border-green-300 px-4 py-3 text-green-700">
                     ✅ {message}
                 </div>
             )}
 
+            {/* Message erreur */}
             {error && (
                 <div className="mb-6 rounded-lg bg-red-100 border border-red-300 px-4 py-3 text-red-700">
                     ❌ {error}
                 </div>
             )}
 
+            {/* Formulaire */}
             <div className="bg-white rounded-2xl shadow-md p-8">
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form
+                    onSubmit={handleSubmit}
+                    className="space-y-6"
+                >
 
                     {/* Type de congé */}
                     <div>
@@ -133,7 +143,7 @@ function NouvelleDemande() {
                                 Sélectionner un type
                             </option>
 
-                            {typesConge?.map((type) => (
+                            {typesConge.map((type) => (
                                 <option
                                     key={type.id}
                                     value={type.id}
@@ -147,6 +157,7 @@ function NouvelleDemande() {
                     {/* Dates */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
+                        {/* Date début */}
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-2">
                                 Date de début
@@ -162,6 +173,7 @@ function NouvelleDemande() {
                             />
                         </div>
 
+                        {/* Date fin */}
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-2">
                                 Date de fin
@@ -182,6 +194,7 @@ function NouvelleDemande() {
                     {/* Durée + type journée */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
+                        {/* Durée */}
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-2">
                                 Durée
@@ -200,6 +213,7 @@ function NouvelleDemande() {
                             />
                         </div>
 
+                        {/* Type journée */}
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-2">
                                 Type de journée
