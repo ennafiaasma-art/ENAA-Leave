@@ -13,7 +13,7 @@ class AuthController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required|string',
+            'password' => 'required',
         ]);
 
         $employe = Employe::where('email', $request->email)->first();
