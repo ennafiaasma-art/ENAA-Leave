@@ -16,31 +16,24 @@ function NouvelleDemande() {
         motif: "",
     });
 
-    // Récupérer les types de congé
-  useEffect(() => {
+    useEffect(() => {
     const fetchTypesConge = async () => {
         try {
             const response = await api.get("/types-conge");
 
-            console.log("Réponse API :", response.data);
+            console.log("Response complète :", response);
+            console.log("Data :", response.data);
+            console.log("Types de congé :", response.data.types_conge);
 
             setTypesConge(response.data.types_conge);
         } catch (error) {
-            console.error("Erreur complète :", error);
-            console.error("Status :", error.response?.status);
-            console.error("Data :", error.response?.data);
-
-            setError(
-                error.response?.data?.message ||
-                "Impossible de récupérer les types de congé."
-            );
+            console.error("Erreur API :", error);
         }
     };
 
     fetchTypesConge();
 }, []);
 
-    // Changement des champs
     const handleChange = (e) => {
         setForm({
             ...form,
@@ -48,7 +41,6 @@ function NouvelleDemande() {
         });
     };
 
-    // Envoyer la demande
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -63,9 +55,10 @@ function NouvelleDemande() {
                 duree: Number(form.duree),
             });
 
-            setMessage(response.data.message);
+            setMessage(
+                response.data.message || "Demande envoyée avec succès."
+            );
 
-            // Vider le formulaire
             setForm({
                 type_conge_id: "",
                 date_debut: "",
@@ -74,9 +67,8 @@ function NouvelleDemande() {
                 type_journee: "journee_entiere",
                 motif: "",
             });
-
         } catch (error) {
-            console.error(error);
+            console.error("Erreur demande :", error);
 
             if (error.response?.data?.errors) {
                 setError(
@@ -98,7 +90,6 @@ function NouvelleDemande() {
     return (
         <div className="max-w-4xl mx-auto">
 
-            {/* Header */}
             <div className="mb-8">
                 <h2 className="text-3xl font-bold text-gray-800">
                     Nouvelle demande de congé
@@ -109,21 +100,18 @@ function NouvelleDemande() {
                 </p>
             </div>
 
-            {/* Message succès */}
             {message && (
                 <div className="mb-6 rounded-lg bg-green-100 border border-green-300 px-4 py-3 text-green-700">
                     ✅ {message}
                 </div>
             )}
 
-            {/* Message erreur */}
             {error && (
                 <div className="mb-6 rounded-lg bg-red-100 border border-red-300 px-4 py-3 text-red-700">
                     ❌ {error}
                 </div>
             )}
 
-            {/* Formulaire */}
             <div className="bg-white rounded-2xl shadow-md p-8">
 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -145,8 +133,11 @@ function NouvelleDemande() {
                                 Sélectionner un type
                             </option>
 
-                            {typesConge.map((type) => (
-                                <option key={type.id} value={type.id}>
+                            {typesConge?.map((type) => (
+                                <option
+                                    key={type.id}
+                                    value={type.id}
+                                >
                                     {type.nom}
                                 </option>
                             ))}
@@ -188,7 +179,7 @@ function NouvelleDemande() {
 
                     </div>
 
-                    {/* Durée + Type journée */}
+                    {/* Durée + type journée */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                         <div>
@@ -269,6 +260,7 @@ function NouvelleDemande() {
                     </div>
 
                 </form>
+
             </div>
         </div>
     );
