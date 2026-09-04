@@ -1,18 +1,23 @@
+
 import { useState } from "react";
+
 import NouvelleDemande from "./NouvelleDemande";
+import MesDemandes from "./MesDemandes";
 
 function EmployeeDashboard() {
-const employeData = localStorage.getItem("employe");
+    const employeData = localStorage.getItem("employe");
 
-let employe = null;
+    let employe = null;
 
-try {
-    employe = employeData ? JSON.parse(employeData) : null;
-} catch (error) {
-    console.error("Erreur données employé :", error);
-    localStorage.removeItem("employe");
-}
+    try {
+        employe = employeData ? JSON.parse(employeData) : null;
+    } catch (error) {
+        console.error("Erreur données employé :", error);
+        localStorage.removeItem("employe");
+    }
+
     const [showDemandeForm, setShowDemandeForm] = useState(false);
+    const [showDemandes, setShowDemandes] = useState(false);
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -32,7 +37,7 @@ try {
 
                 <div className="flex items-center gap-4">
                     <span className="text-gray-700">
-                        {employe?.prenom} {employe?.nom}
+                        {employe?.prenom || ""} {employe?.nom || ""}
                     </span>
 
                     <button
@@ -47,10 +52,22 @@ try {
             {/* Content */}
             <main className="p-8">
 
-                {/* Si le formulaire est ouvert */}
-                {showDemandeForm ? (
+                {/* ================= MES DEMANDES ================= */}
+                {showDemandes ? (
                     <div>
+                        <button
+                            onClick={() => setShowDemandes(false)}
+                            className="mb-6 text-blue-600 hover:text-blue-800 font-semibold"
+                        >
+                            ← Retour au dashboard
+                        </button>
 
+                        <MesDemandes />
+                    </div>
+
+                /* ================= NOUVELLE DEMANDE ================= */
+                ) : showDemandeForm ? (
+                    <div>
                         <button
                             onClick={() => setShowDemandeForm(false)}
                             className="mb-6 text-blue-600 hover:text-blue-800 font-semibold"
@@ -62,11 +79,13 @@ try {
                             onBack={() => setShowDemandeForm(false)}
                         />
                     </div>
+
+                /* ================= DASHBOARD ================= */
                 ) : (
                     <>
                         {/* Bienvenue */}
                         <h2 className="text-3xl font-bold text-gray-800">
-                            Bienvenue {employe?.prenom} 👋
+                            Bienvenue {employe?.prenom || ""} 👋
                         </h2>
 
                         <p className="text-gray-500 mt-2">
@@ -75,30 +94,31 @@ try {
 
                         {/* Informations employé */}
                         <div className="bg-white rounded-xl shadow p-6 mt-8">
+
                             <h3 className="text-xl font-semibold mb-4">
                                 Mes informations
                             </h3>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                                 <div>
                                     <p className="text-gray-500">Nom</p>
                                     <p className="font-semibold">
-                                        {employe?.nom}
+                                        {employe?.nom || "Non renseigné"}
                                     </p>
                                 </div>
 
                                 <div>
                                     <p className="text-gray-500">Prénom</p>
                                     <p className="font-semibold">
-                                        {employe?.prenom}
+                                        {employe?.prenom || "Non renseigné"}
                                     </p>
                                 </div>
 
                                 <div>
                                     <p className="text-gray-500">Email</p>
                                     <p className="font-semibold">
-                                        {employe?.email}
+                                        {employe?.email || "Non renseigné"}
                                     </p>
                                 </div>
 
@@ -107,21 +127,23 @@ try {
                                         Département
                                     </p>
                                     <p className="font-semibold">
-                                        {employe?.departement}
+                                        {employe?.departement || "Non renseigné"}
                                     </p>
                                 </div>
 
                                 <div>
                                     <p className="text-gray-500">Rôle</p>
                                     <p className="font-semibold">
-                                        {employe?.role}
+                                        {employe?.role || "Non renseigné"}
                                     </p>
                                 </div>
 
                                 <div>
-                                    <p className="text-gray-500">Téléphone</p>
+                                    <p className="text-gray-500">
+                                        Téléphone
+                                    </p>
                                     <p className="font-semibold">
-                                        {employe?.telephone}
+                                        {employe?.telephone || "Non renseigné"}
                                     </p>
                                 </div>
 
@@ -165,6 +187,9 @@ try {
                                 </p>
 
                                 <button
+                                    onClick={() =>
+                                        setShowDemandes(true)
+                                    }
                                     className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
                                 >
                                     Voir mes demandes
@@ -201,3 +226,4 @@ try {
 }
 
 export default EmployeeDashboard;
+

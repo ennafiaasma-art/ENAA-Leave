@@ -1,27 +1,24 @@
 import { useState } from "react";
+import {useNavigate } from "react-router-dom"
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
-
+    const navigate = useNavigate()
     const handleLogin = async (e) => {
         e.preventDefault();
 
         setLoading(true);
         setMessage("");
 
-        try {
-            const response = await axios.post("/api/login" ,
-                {
-                    email,
-                    password,
-                }
-            );
+      try {
+        const response = await axios.post("http://localhost:8001/api/login", {
+            email,
+            password,
+        });
 
             console.log(response.data);
 
@@ -33,8 +30,9 @@ function Login() {
 
             setMessage("Connexion réussie ✅");
 
-            setTimeout(() => { navigate("/employee-dashboard"); }, 500);
-
+setTimeout(() => {
+    navigate('/')
+}, 500);
         } catch (error) {
             console.error(error);
 
