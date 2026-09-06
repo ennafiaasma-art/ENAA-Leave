@@ -105,6 +105,8 @@ function Login() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
+                               autoComplete="username"
+    placeholder="nom@exemple.com"
                                 placeholder="••••••••"
                                 className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all text-slate-800 text-sm bg-slate-50 focus:bg-white"
                             />
