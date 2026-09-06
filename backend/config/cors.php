@@ -1,18 +1,12 @@
 <?php
-
 return [
 
-    'paths' => [
-        'api/*',
-        'sanctum/csrf-cookie',
-    ],
+    'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
-    ],
+    // إما إضافة رابط React أو وضع '*' لتسمح بجميع المصادر في مرحلة التطوير
+    'allowed_origins' => ['http://localhost:5173', 'http://127.0.0.1:5173'],
 
     'allowed_origins_patterns' => [],
 
@@ -22,6 +16,6 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => false,
+    'supports_credentials' => true,
 
 ];
