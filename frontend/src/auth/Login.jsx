@@ -1,7 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../services/api"; // استخدام الملف الموحد للـ API
 
-function Login() {
+function Login({ setToken }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
@@ -9,136 +9,82 @@ function Login() {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-
         setLoading(true);
         setMessage("");
 
         try {
-            const response = await axios.post(
-                "http://localhost:8001/api/login",
-                {
-                    email: email.trim(),
-                    password: password,
-                },
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Accept": "application/json",
-                    },
-                }
-            );
+            const response = await api.post("/login", {
+                email: email.trim(),
+                password: password,
+            });
 
-            console.log("Login response:", response.data);
+            const token = response.data.token;
             const userData = response.data.employe || response.data.user;
 
-            localStorage.setItem("token", response.data.token);
+            // حفظ البيانات في LocalStorage
+            localStorage.setItem("token", token);
             localStorage.setItem("employe", JSON.stringify(userData));
 
             setMessage("Connexion réussie ✅");
 
-            setTimeout(() => {
-                window.location.href = "/";
-            }, 500);
+            // تحديث State في App.jsx للانتقال فوراً لـ Dashboard دون الحاجة لـ Reload
+            if (setToken) {
+                setToken(token);
+            }
+
         } catch (error) {
             console.error("Login Error:", error.response?.data);
-
             setMessage(
-                error.response?.data?.message ||
-                "Email ou mot de passe incorrect"
+                error.response?.data?.message || "Email ou mot de passe incorrect"
             );
         } finally {
             setLoading(false);
         }
     };
 
-    const isSuccess = message.includes("réussie");
-
+    // إضافة واجهة الإدخال (JSX) التي كانت مفقودة
     return (
-        <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
-            <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-200/80 overflow-hidden">
+        <div className="min-h-screen flex items-center justify-center bg-slate-100 p-4">
+            <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+                <h2 className="text-2xl font-bold text-center mb-6 text-slate-800">Connexion</h2>
                 
-                {/* En-tête / Header */}
-                <div className="bg-slate-900 p-8 text-center text-white">
-                    <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-600 rounded-xl mb-3 shadow-lg shadow-indigo-500/30">
-                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-                        </svg>
+                {message && (
+                    <div className={`p-3 rounded mb-4 text-sm ${message.includes("réussie") ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                        {message}
                     </div>
-                    <h1 className="text-2xl font-bold tracking-tight">Espace Administration</h1>
-                    <p className="text-slate-400 text-sm mt-1">Accédez à la gestion de l'établissement</p>
-                </div>
+                )}
 
-                {/* Formulaire */}
-                <div className="p-8">
-                    {message && (
-                        <div className={`mb-6 p-4 rounded-xl text-sm font-medium border flex items-center gap-2 ${
-                            isSuccess 
-                                ? "bg-emerald-50 border-emerald-200 text-emerald-800" 
-                                : "bg-rose-50 border-rose-200 text-rose-800"
-                        }`}>
-                            <span>{message}</span>
-                        </div>
-                    )}
+                <form onSubmit={handleLogin} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                        <input
+                            type="email"
+                            required
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
 
-                    <form onSubmit={handleLogin} className="space-y-5">
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                Email
-                            </label>
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                                placeholder="nom@exemple.com"
-                                className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all text-slate-800 text-sm bg-slate-50 focus:bg-white"
-                            />
-                        </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Mot de passe</label>
+                        <input
+                            type="password"
+                            required
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
 
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                Mot de passe
-                            </label>
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                               autoComplete="username"
-    placeholder="nom@exemple.com"
-                                placeholder="••••••••"
-                                className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all text-slate-800 text-sm bg-slate-50 focus:bg-white"
-                            />
-                        </div>
-
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md shadow-indigo-600/20 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center text-sm"
-                        >
-                            {loading ? (
-                                <span className="flex items-center gap-2">
-                                    <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    Connexion...
-                                </span>
-                            ) : (
-                                "Se connecter"
-                            )}
-                        </button>
-                    </form>
-                </div>
-
-                {/* Pied de carte */}
-                <div className="bg-slate-50 px-8 py-4 border-t border-slate-100 text-center">
-                    <p className="text-xs text-slate-400">
-                        Portail sécurisé de l'administration scolaire
-                    </p>
-                </div>
-
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-200 disabled:opacity-50"
+                    >
+                        {loading ? "Chargement..." : "Se connecter"}
+                    </button>
+                </form>
             </div>
         </div>
     );

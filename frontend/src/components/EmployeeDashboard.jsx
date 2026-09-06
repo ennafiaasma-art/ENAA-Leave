@@ -1,12 +1,9 @@
-
 import { useState } from "react";
-
 import NouvelleDemande from "./NouvelleDemande";
 import MesDemandes from "./MesDemandes";
 
 function EmployeeDashboard() {
     const employeData = localStorage.getItem("employe");
-
     let employe = null;
 
     try {
@@ -16,13 +13,12 @@ function EmployeeDashboard() {
         localStorage.removeItem("employe");
     }
 
-    const [showDemandeForm, setShowDemandeForm] = useState(false);
-    const [showDemandes, setShowDemandes] = useState(false);
+    // استخدام حالة واحدة للتحكم في الواجهة المعروضة
+    const [activeView, setActiveView] = useState("dashboard"); // 'dashboard' | 'nouvelle' | 'mes_demandes'
 
     const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("employe");
-
         window.location.href = "/";
     };
 
@@ -53,10 +49,10 @@ function EmployeeDashboard() {
             <main className="p-8">
 
                 {/* ================= MES DEMANDES ================= */}
-                {showDemandes ? (
+                {activeView === "mes_demandes" && (
                     <div>
                         <button
-                            onClick={() => setShowDemandes(false)}
+                            onClick={() => setActiveView("dashboard")}
                             className="mb-6 text-blue-600 hover:text-blue-800 font-semibold"
                         >
                             ← Retour au dashboard
@@ -64,26 +60,27 @@ function EmployeeDashboard() {
 
                         <MesDemandes />
                     </div>
+                )}
 
-                /* ================= NOUVELLE DEMANDE ================= */
-                ) : showDemandeForm ? (
+                {/* ================= NOUVELLE DEMANDE ================= */}
+                {activeView === "nouvelle" && (
                     <div>
                         <button
-                            onClick={() => setShowDemandeForm(false)}
+                            onClick={() => setActiveView("dashboard")}
                             className="mb-6 text-blue-600 hover:text-blue-800 font-semibold"
                         >
                             ← Retour au dashboard
                         </button>
 
                         <NouvelleDemande
-                            onBack={() => setShowDemandeForm(false)}
+                            onBack={() => setActiveView("dashboard")}
                         />
                     </div>
+                )}
 
-                /* ================= DASHBOARD ================= */
-                ) : (
+                {/* ================= DASHBOARD ================= */}
+                {activeView === "dashboard" && (
                     <>
-                        {/* Bienvenue */}
                         <h2 className="text-3xl font-bold text-gray-800">
                             Bienvenue {employe?.prenom || ""} 👋
                         </h2>
@@ -94,59 +91,35 @@ function EmployeeDashboard() {
 
                         {/* Informations employé */}
                         <div className="bg-white rounded-xl shadow p-6 mt-8">
-
                             <h3 className="text-xl font-semibold mb-4">
                                 Mes informations
                             </h3>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
                                 <div>
                                     <p className="text-gray-500">Nom</p>
-                                    <p className="font-semibold">
-                                        {employe?.nom || "Non renseigné"}
-                                    </p>
+                                    <p className="font-semibold">{employe?.nom || "Non renseigné"}</p>
                                 </div>
-
                                 <div>
                                     <p className="text-gray-500">Prénom</p>
-                                    <p className="font-semibold">
-                                        {employe?.prenom || "Non renseigné"}
-                                    </p>
+                                    <p className="font-semibold">{employe?.prenom || "Non renseigné"}</p>
                                 </div>
-
                                 <div>
                                     <p className="text-gray-500">Email</p>
-                                    <p className="font-semibold">
-                                        {employe?.email || "Non renseigné"}
-                                    </p>
+                                    <p className="font-semibold">{employe?.email || "Non renseigné"}</p>
                                 </div>
-
                                 <div>
-                                    <p className="text-gray-500">
-                                        Département
-                                    </p>
-                                    <p className="font-semibold">
-                                        {employe?.departement || "Non renseigné"}
-                                    </p>
+                                    <p className="text-gray-500">Département</p>
+                                    <p className="font-semibold">{employe?.departement || "Non renseigné"}</p>
                                 </div>
-
                                 <div>
                                     <p className="text-gray-500">Rôle</p>
-                                    <p className="font-semibold">
-                                        {employe?.role || "Non renseigné"}
-                                    </p>
+                                    <p className="font-semibold">{employe?.role || "Non renseigné"}</p>
                                 </div>
-
                                 <div>
-                                    <p className="text-gray-500">
-                                        Téléphone
-                                    </p>
-                                    <p className="font-semibold">
-                                        {employe?.telephone || "Non renseigné"}
-                                    </p>
+                                    <p className="text-gray-500">Téléphone</p>
+                                    <p className="font-semibold">{employe?.telephone || "Non renseigné"}</p>
                                 </div>
-
                             </div>
                         </div>
 
@@ -155,65 +128,35 @@ function EmployeeDashboard() {
 
                             {/* Nouvelle demande */}
                             <div className="bg-white p-6 rounded-xl shadow">
-
-                                <h3 className="text-lg font-semibold">
-                                    📝 Demander un congé
-                                </h3>
-
-                                <p className="text-gray-500 mt-2">
-                                    Créer une nouvelle demande de congé.
-                                </p>
-
+                                <h3 className="text-lg font-semibold">📝 Demander un congé</h3>
+                                <p className="text-gray-500 mt-2">Créer une nouvelle demande de congé.</p>
                                 <button
-                                    onClick={() =>
-                                        setShowDemandeForm(true)
-                                    }
+                                    onClick={() => setActiveView("nouvelle")}
                                     className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
                                 >
                                     + Ajouter une demande
                                 </button>
-
                             </div>
 
                             {/* Mes demandes */}
                             <div className="bg-white p-6 rounded-xl shadow">
-
-                                <h3 className="text-lg font-semibold">
-                                    📋 Mes demandes
-                                </h3>
-
-                                <p className="text-gray-500 mt-2">
-                                    Consulter l'état de vos demandes.
-                                </p>
-
+                                <h3 className="text-lg font-semibold">📋 Mes demandes</h3>
+                                <p className="text-gray-500 mt-2">Consulter l'état de vos demandes.</p>
                                 <button
-                                    onClick={() =>
-                                        setShowDemandes(true)
-                                    }
+                                    onClick={() => setActiveView("mes_demandes")}
                                     className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
                                 >
                                     Voir mes demandes
                                 </button>
-
                             </div>
 
                             {/* Notifications */}
                             <div className="bg-white p-6 rounded-xl shadow">
-
-                                <h3 className="text-lg font-semibold">
-                                    🔔 Notifications
-                                </h3>
-
-                                <p className="text-gray-500 mt-2">
-                                    Consulter vos notifications.
-                                </p>
-
-                                <button
-                                    className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
-                                >
+                                <h3 className="text-lg font-semibold">🔔 Notifications</h3>
+                                <p className="text-gray-500 mt-2">Consulter vos notifications.</p>
+                                <button className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
                                     Mes notifications
                                 </button>
-
                             </div>
 
                         </div>
@@ -226,4 +169,3 @@ function EmployeeDashboard() {
 }
 
 export default EmployeeDashboard;
-
