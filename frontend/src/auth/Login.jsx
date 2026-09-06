@@ -1,5 +1,4 @@
 import { useState } from "react";
-import {useNavigate } from "react-router-dom"
 import axios from "axios";
 
 function Login() {
@@ -7,34 +6,41 @@ function Login() {
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate()
+
     const handleLogin = async (e) => {
         e.preventDefault();
 
         setLoading(true);
         setMessage("");
 
-      try {
-        const response = await axios.post("http://localhost:8001/api/login", {
-            email,
-            password,
-        });
+        try {
+            const response = await axios.post(
+                "http://localhost:8001/api/login",
+                {
+                    email: email.trim(),
+                    password: password,
+                },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json",
+                    },
+                }
+            );
 
-            console.log(response.data);
+            console.log("Login response:", response.data);
+            const userData = response.data.employe || response.data.user;
 
             localStorage.setItem("token", response.data.token);
-            localStorage.setItem(
-                "employe",
-                JSON.stringify(response.data.employe)
-            );
+            localStorage.setItem("employe", JSON.stringify(userData));
 
             setMessage("Connexion réussie ✅");
 
-setTimeout(() => {
-    navigate('/')
-}, 500);
+            setTimeout(() => {
+                window.location.href = "/";
+            }, 500);
         } catch (error) {
-            console.error(error);
+            console.error("Login Error:", error.response?.data);
 
             setMessage(
                 error.response?.data?.message ||
